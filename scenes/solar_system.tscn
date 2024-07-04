@@ -6,7 +6,7 @@
 [ext_resource type="Material" uid="uid://6rh4h27jonwh" path="res://shaders/materials/wandering_oasis_material.tres" id="6_in61s"]
 [ext_resource type="PackedScene" uid="uid://b4yspcixk0bra" path="res://scenes/player.tscn" id="6_ralp7"]
 [ext_resource type="ArrayMesh" uid="uid://bnan0l06yemlj" path="res://assets/models/env/grass_short0lod.obj" id="7_f1cql"]
-[ext_resource type="Shader" uid="uid://cj4hmsylv8hxo" path="res://shaders/foliage.tres" id="7_m72fv"]
+[ext_resource type="Shader" uid="uid://duxr5j0tg0s6o" path="res://shaders/foliage.tres" id="7_m72fv"]
 [ext_resource type="Texture2D" uid="uid://cluonmm46bd5f" path="res://assets/texture/enviroment/grass_0.png" id="7_of65b"]
 [ext_resource type="Texture2D" uid="uid://di6nb80u42w7" path="res://assets/texture/8k_stars.jpg" id="12_hna2f"]
 [ext_resource type="Script" path="res://scripts/GameEnviroment.gd" id="13_xa6vv"]
@@ -377,7 +377,7 @@ material = SubResource("ShaderMaterial_t57s6")
 [node name="BuildingContainer" type="Node3D" parent="PlanetContainer/sun"]
 
 [node name="wandering_oasis" type="Node3D" parent="PlanetContainer"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3559.1, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3000, 0, 0)
 script = ExtResource("2_xk8qk")
 mass = 480
 planet_radius = 185
@@ -417,7 +417,7 @@ up_mode = 1
 [node name="BuildingContainer" type="Node3D" parent="PlanetContainer/wandering_oasis"]
 
 [node name="Ship" parent="." instance=ExtResource("3_rkp8s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 220.517, 258.475, 25.065)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 77.4315, 330.932, 25.065)
 can_sleep = false
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -425,7 +425,7 @@ environment = SubResource("Environment_pbn7x")
 script = ExtResource("13_xa6vv")
 
 [node name="Player" parent="." instance=ExtResource("6_ralp7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -279.528, 267.57, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.0228, 371.748, 71.3554)
 
 [node name="SunLight" type="DirectionalLight3D" parent="."]
 shadow_enabled = true
