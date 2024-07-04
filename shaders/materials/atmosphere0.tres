@@ -1,0 +1,125 @@
+[gd_resource type="ShaderMaterial" load_steps=21 format=3 uid="uid://b0u30u4a3suap"]
+
+[ext_resource type="Shader" path="res://shaders/atmosphere.gdshader" id="1_tovxd"]
+
+[sub_resource type="Gradient" id="Gradient_u23lt"]
+offsets = PackedFloat32Array(0.111857, 0.248322, 0.306488, 0.36689, 0.391499, 1)
+colors = PackedColorArray(0.0588235, 0.447059, 1, 1, 0.588235, 0.486275, 0.372549, 1, 0.815686, 0.247059, 0.105882, 1, 0.905882, 0.0431373, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_r35yg"]
+gradient = SubResource("Gradient_u23lt")
+width = 1024
+
+[sub_resource type="Gradient" id="Gradient_1iw3a"]
+offsets = PackedFloat32Array(0, 0.198413, 0.34127, 0.547619)
+colors = PackedColorArray(1, 1, 1, 1, 1, 0.594244, 0.310755, 1, 1, 0.258824, 0.109804, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_s356y"]
+gradient = SubResource("Gradient_1iw3a")
+
+[sub_resource type="Gradient" id="Gradient_f3v14"]
+offsets = PackedFloat32Array(0.774648, 0.809859, 0.929577)
+colors = PackedColorArray(0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_cc82i"]
+gradient = SubResource("Gradient_f3v14")
+
+[sub_resource type="Gradient" id="Gradient_b1fl4"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_8d5cp"]
+noise_type = 2
+frequency = 0.0215
+
+[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_w3dq6"]
+width = 128
+height = 128
+depth = 128
+invert = true
+seamless = true
+seamless_blend_skirt = 0.678
+color_ramp = SubResource("Gradient_b1fl4")
+noise = SubResource("FastNoiseLite_8d5cp")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_gylno"]
+noise_type = 2
+frequency = 0.072
+domain_warp_enabled = true
+domain_warp_amplitude = 18.405
+domain_warp_frequency = 0.02
+domain_warp_fractal_type = 0
+
+[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_28sjc"]
+width = 32
+height = 32
+depth = 32
+seamless = true
+seamless_blend_skirt = 0.525
+noise = SubResource("FastNoiseLite_gylno")
+
+[sub_resource type="Gradient" id="Gradient_gbie5"]
+colors = PackedColorArray(0.147672, 0.147672, 0.147672, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_x647x"]
+gradient = SubResource("Gradient_gbie5")
+
+[sub_resource type="Gradient" id="Gradient_bag4q"]
+offsets = PackedFloat32Array(0.056338, 0.15873, 0.412698, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.0288, 0.27712, 0.96, 1, 0, 0.2555, 0.73, 1, 7.17148e-06, 0.202795, 0.587574, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_elamc"]
+gradient = SubResource("Gradient_bag4q")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_gxi7e"]
+frequency = 0.011
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1pca1"]
+seamless = true
+noise = SubResource("FastNoiseLite_gxi7e")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_fq15k"]
+frequency = 0.0285
+fractal_octaves = 3
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_cpj8e"]
+seamless = true
+seamless_blend_skirt = 0.676
+as_normal_map = true
+bump_strength = 32.0
+noise = SubResource("FastNoiseLite_fq15k")
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_tovxd")
+shader_parameter/radius = 419.995
+shader_parameter/cloud_outer_radius = 385.325
+shader_parameter/liquid_layer_radius = 283.625
+shader_parameter/planet_radius = 194.695
+shader_parameter/scatteringCol = Vector3(3.385, 8.225, 27.865)
+shader_parameter/intensity = 7.12
+shader_parameter/density_fallof = 7.64
+shader_parameter/light_color = Color(0.808998, 0.808998, 0.808998, 1)
+shader_parameter/light_dir = Vector3(0, 1, 0)
+shader_parameter/cloud_coverage = 0.265
+shader_parameter/absorbtion_sun = 23.955
+shader_parameter/absorbtion_powder = 2.645
+shader_parameter/absorbtion_cloud = 0.92
+shader_parameter/darkness_treshold = 0.0
+shader_parameter/absorbtion_atmos = 1.0
+shader_parameter/phaseParams = Vector4(0.845, 0.875, 8.295, 0.945)
+shader_parameter/cloud_scale = 2.225
+shader_parameter/cloud_detail_scale = 2.41
+shader_parameter/cloud_speed = Vector3(1, 0, 0)
+shader_parameter/cloud_detail_speed = Vector3(1, 0, 0)
+shader_parameter/liquid_absorbtion = 4.02
+shader_parameter/liquid_color_scale = 138.115
+shader_parameter/liquid_shininess = 52.585
+shader_parameter/water_normal_size = null
+shader_parameter/atmosGradient = SubResource("GradientTexture1D_r35yg")
+shader_parameter/cloud_noise = SubResource("NoiseTexture3D_w3dq6")
+shader_parameter/cloud_noise_detail = SubResource("NoiseTexture3D_28sjc")
+shader_parameter/cloud_color_over_angle = SubResource("GradientTexture1D_s356y")
+shader_parameter/cloud_height_gradient = SubResource("GradientTexture1D_cc82i")
+shader_parameter/liquid_color_ramp = SubResource("GradientTexture1D_elamc")
+shader_parameter/liquid_angle_color_ramp = SubResource("GradientTexture1D_x647x")
+shader_parameter/refraction_noise = SubResource("NoiseTexture2D_1pca1")
+shader_parameter/water_normal = SubResource("NoiseTexture2D_cpj8e")

@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=3 uid="uid://b4yspcixk0bra"]
+
+[ext_resource type="Script" path="res://scripts/Player.gd" id="1_k20qb"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_mxast"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_konke"]
+radius = 2.83795
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_k20qb")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+text = "24"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0897119, 0)
+shape = SubResource("CapsuleShape3D_mxast")
+
+[node name="Pivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00471, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Pivot"]
+far = 16000.0
+
+[node name="VoxelViewer" type="VoxelViewer" parent="Pivot/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.82275, 0)
+
+[node name="TerrainRay" type="RayCast3D" parent="Pivot/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.0229465)
+target_position = Vector3(0, -19.83, 0)
+collision_mask = 8
+
+[node name="Area3D" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.993998, 0)
+collision_layer = 16
+collision_mask = 16
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.09481, 0)
+shape = SubResource("SphereShape3D_konke")

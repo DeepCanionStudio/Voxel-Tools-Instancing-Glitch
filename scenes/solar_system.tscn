@@ -1,0 +1,441 @@
+[gd_scene load_steps=43 format=3 uid="uid://b1a0hjsjk6qo0"]
+
+[ext_resource type="Script" path="res://scripts/solar_system.gd" id="1_8skfh"]
+[ext_resource type="Script" path="res://scenes/PlanetBody.gd" id="2_xk8qk"]
+[ext_resource type="PackedScene" uid="uid://cp8jookxwgarp" path="res://scenes/ship.tscn" id="3_rkp8s"]
+[ext_resource type="Material" uid="uid://6rh4h27jonwh" path="res://shaders/materials/wandering_oasis_material.tres" id="6_in61s"]
+[ext_resource type="PackedScene" uid="uid://b4yspcixk0bra" path="res://scenes/player.tscn" id="6_ralp7"]
+[ext_resource type="ArrayMesh" uid="uid://bnan0l06yemlj" path="res://assets/models/env/grass_short0lod.obj" id="7_f1cql"]
+[ext_resource type="Shader" uid="uid://cj4hmsylv8hxo" path="res://shaders/foliage.tres" id="7_m72fv"]
+[ext_resource type="Texture2D" uid="uid://cluonmm46bd5f" path="res://assets/texture/enviroment/grass_0.png" id="7_of65b"]
+[ext_resource type="Texture2D" uid="uid://di6nb80u42w7" path="res://assets/texture/8k_stars.jpg" id="12_hna2f"]
+[ext_resource type="Script" path="res://scripts/GameEnviroment.gd" id="13_xa6vv"]
+[ext_resource type="Script" path="res://scripts/SunLight.gd" id="15_w0euc"]
+
+[sub_resource type="Shader" id="Shader_qelos"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.2.2.stable's StandardMaterial3D.
+
+shader_type spatial;
+render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx;
+uniform vec4 albedo : source_color;
+uniform sampler2D texture_albedo : source_color,filter_linear_mipmap,repeat_enable;
+uniform float point_size : hint_range(0,128);
+uniform float roughness : hint_range(0,1);
+uniform sampler2D texture_metallic : hint_default_white,filter_linear_mipmap,repeat_enable;
+uniform vec4 metallic_texture_channel;
+uniform sampler2D texture_roughness : hint_roughness_r,filter_linear_mipmap,repeat_enable;
+uniform float specular;
+uniform float metallic;
+uniform sampler2D texture_emission : source_color, hint_default_black,filter_linear_mipmap,repeat_enable;
+uniform vec4 emission : source_color;
+uniform float emission_energy;
+uniform vec3 uv1_scale;
+uniform vec3 uv1_offset;
+uniform vec3 uv2_scale;
+uniform vec3 uv2_offset;
+
+
+uniform sampler2D noise ;
+varying float dstFromCenter;
+
+void vertex() {
+	UV=UV*uv1_scale.xy+uv1_offset.xy;
+	VERTEX += NORMAL * texture(noise, UV * 2.0 + TIME / 25.0).r * 50.0;
+	dstFromCenter = length(VERTEX);
+}
+
+
+
+
+
+
+void fragment() {
+	vec2 base_uv = UV;
+	vec4 albedo_tex = texture(texture_albedo,base_uv);
+	ALBEDO = albedo.rgb * albedo_tex.rgb / clamp(dstFromCenter / 200.0 - 5.2, 0.1, 1.0);
+	float metallic_tex = dot(texture(texture_metallic,base_uv),metallic_texture_channel);
+	METALLIC = metallic_tex * metallic;
+	vec4 roughness_texture_channel = vec4(1.0,0.0,0.0,0.0);
+	float roughness_tex = dot(texture(texture_roughness,base_uv),roughness_texture_channel);
+	ROUGHNESS = roughness_tex * roughness;
+	SPECULAR = specular;
+	vec3 emission_tex = texture(texture_emission,base_uv).rgb;
+	EMISSION = (emission.rgb+emission_tex)*emission_energy / clamp((dstFromCenter / 200.0 - 5.2), 0.1, 1.0);
+	BACKLIGHT = vec3(1.0);
+}
+"
+
+[sub_resource type="Gradient" id="Gradient_6y0xc"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_qwr1q"]
+frequency = 0.012
+fractal_octaves = 2
+fractal_weighted_strength = 0.56
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_81lp5"]
+seamless = true
+seamless_blend_skirt = 0.375
+color_ramp = SubResource("Gradient_6y0xc")
+noise = SubResource("FastNoiseLite_qwr1q")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_t57s6"]
+render_priority = 0
+shader = SubResource("Shader_qelos")
+shader_parameter/albedo = Color(0, 0, 0, 1)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = null
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/emission = Color(1, 0.724907, 0.0185973, 1)
+shader_parameter/emission_energy = 1.26
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/noise = SubResource("NoiseTexture2D_81lp5")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_q2l7v"]
+radius = 445.535
+
+[sub_resource type="FastNoise2" id="FastNoise2_bqksf"]
+period = 288.0
+fractal_type = 1
+fractal_octaves = 8
+fractal_gain = 0.485
+fractal_ping_pong_strength = 4.26
+
+[sub_resource type="VoxelGeneratorGraph" id="VoxelGeneratorGraph_848e8"]
+graph_data = {
+"connections": [[9, 0, 8, 1], [6, 0, 8, 0], [7, 0, 9, 0], [8, 0, 4, 0]],
+"nodes": {
+"1": {
+"gui_position": Vector2(440, 50),
+"type": "InputX"
+},
+"2": {
+"gui_position": Vector2(440, 150),
+"type": "InputY"
+},
+"3": {
+"gui_position": Vector2(440, 250),
+"type": "InputZ"
+},
+"4": {
+"auto_connect": true,
+"gui_position": Vector2(1140, 160),
+"type": "OutputSDF"
+},
+"6": {
+"auto_connect": true,
+"gui_position": Vector2(600, 160),
+"radius": 300.0,
+"type": "SdfSphere",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+},
+"7": {
+"auto_connect": true,
+"gui_position": Vector2(600, 300),
+"noise": SubResource("FastNoise2_bqksf"),
+"type": "FastNoise2_3D",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+},
+"8": {
+"gui_position": Vector2(840, 160),
+"type": "Add"
+},
+"9": {
+"b": 55.0,
+"gui_position": Vector2(820, 260),
+"type": "Multiply"
+}
+},
+"version": 2
+}
+
+[sub_resource type="VoxelMesherTransvoxel" id="VoxelMesherTransvoxel_yhm68"]
+
+[sub_resource type="VoxelInstanceGenerator" id="VoxelInstanceGenerator_2mk2h"]
+density = 0.8
+emit_mode = 2
+max_slope_degrees = 25.235
+min_height = 290.66
+max_height = 323.035
+min_scale = 0.385
+max_scale = 0.485
+vertical_alignment = 0.615
+noise_on_scale = 1.0
+
+[sub_resource type="Gradient" id="Gradient_hxpjt"]
+offsets = PackedFloat32Array(0.0602837, 1)
+colors = PackedColorArray(0.0944707, 0.499056, 0.439189, 1, 0.401862, 0.671511, 0.366297, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_taugu"]
+gradient = SubResource("Gradient_hxpjt")
+fill_from = Vector2(1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_s7gcn"]
+frequency = 0.0205
+fractal_octaves = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ektse"]
+seamless = true
+seamless_blend_skirt = 0.725
+noise = SubResource("FastNoiseLite_s7gcn")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_a43af"]
+render_priority = 0
+shader = ExtResource("7_m72fv")
+shader_parameter/u_transition_mask = null
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/alpha_scissor_threshold = 0.5
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = null
+shader_parameter/specular = 1.0
+shader_parameter/metallic = 0.0
+shader_parameter/backlight = Color(1, 1, 1, 1)
+shader_parameter/uv1_scale = Vector3(-1, -1, -1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/texture_albedo = ExtResource("7_of65b")
+shader_parameter/gradient = SubResource("GradientTexture2D_taugu")
+shader_parameter/wind_noise = SubResource("NoiseTexture2D_ektse")
+
+[sub_resource type="VoxelInstanceLibraryMultiMeshItem" id="VoxelInstanceLibraryMultiMeshItem_ilp5v"]
+name = "grass"
+generator = SubResource("VoxelInstanceGenerator_2mk2h")
+persistent = true
+mesh = ExtResource("7_f1cql")
+material_override = SubResource("ShaderMaterial_a43af")
+cast_shadow = 0
+gi_mode = 0
+collision_layer = 0
+collision_mask = 0
+_mesh_lod_distance_ratios = PackedFloat32Array(0.35, 0.35, 0.6, 1)
+
+[sub_resource type="VoxelInstanceGenerator" id="VoxelInstanceGenerator_a05rn"]
+density = 0.3
+emit_mode = 2
+max_slope_degrees = 25.235
+min_height = 326.23
+max_height = 341.145
+min_scale = 0.34
+max_scale = 0.485
+vertical_alignment = 0.615
+noise_on_scale = 1.0
+
+[sub_resource type="Gradient" id="Gradient_147yo"]
+offsets = PackedFloat32Array(0.0602837, 0.914286)
+colors = PackedColorArray(0.74, 0.74, 0.74, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_j7ku1"]
+gradient = SubResource("Gradient_147yo")
+fill_from = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0pbol"]
+render_priority = 0
+shader = ExtResource("7_m72fv")
+shader_parameter/u_transition_mask = null
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/alpha_scissor_threshold = 0.5
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = null
+shader_parameter/specular = 1.0
+shader_parameter/metallic = 0.0
+shader_parameter/backlight = Color(1, 1, 1, 1)
+shader_parameter/uv1_scale = Vector3(-1, -1, -1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/texture_albedo = ExtResource("7_of65b")
+shader_parameter/gradient = SubResource("GradientTexture2D_j7ku1")
+shader_parameter/wind_noise = SubResource("NoiseTexture2D_ektse")
+
+[sub_resource type="VoxelInstanceLibraryMultiMeshItem" id="VoxelInstanceLibraryMultiMeshItem_ni3yn"]
+name = "grass2"
+generator = SubResource("VoxelInstanceGenerator_a05rn")
+persistent = true
+mesh = ExtResource("7_f1cql")
+material_override = SubResource("ShaderMaterial_0pbol")
+cast_shadow = 0
+
+[sub_resource type="VoxelInstanceLibrary" id="VoxelInstanceLibrary_e5gqk"]
+item_1 = SubResource("VoxelInstanceLibraryMultiMeshItem_ilp5v")
+item_2 = SubResource("VoxelInstanceLibraryMultiMeshItem_ni3yn")
+
+[sub_resource type="Shader" id="Shader_bhvja"]
+code = "
+// NOTE: Shader automatically converted from Godot Engine 4.2.2.stable's PanoramaSkyMaterial.
+
+shader_type sky;
+
+uniform sampler2D source_panorama : filter_linear, source_color, hint_default_black;
+
+uniform sampler2D noise: repeat_enable;
+uniform sampler2D gradient;
+
+void sky() {
+	// compute stereographic coordinates
+	float theta = acos(dot(EYEDIR, vec3(0, 1, 0)));
+	float phi = atan(EYEDIR.z, EYEDIR.x);
+	float r = 2.0 * tan(theta / 2.0);
+	vec2 stereographic = r * vec2(cos(phi), sin(phi));
+	vec2 texCoords = vec2(0.5, 0.5) + stereographic * vec2(0.5, -0.5);
+	
+	vec4 tex = texture(noise, texCoords * 0.2 + TIME /585.0) * (texture(noise, texCoords /1.6 - TIME /799.0));
+	float grad = texture(gradient, vec2(EYEDIR.y / 2.0 - 0.5, 0)).r;
+	COLOR = texture(source_panorama, SKY_COORDS).rgb + tex.rgb * grad;
+}
+"
+
+[sub_resource type="Gradient" id="Gradient_qc65m"]
+interpolation_color_space = 2
+offsets = PackedFloat32Array(0, 0.336735, 0.408889, 0.48, 0.522963, 0.571852, 0.657778, 0.765306, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.0155473, 0.0155473, 0.0155473, 1, 0.0227805, 0.0227805, 0.0227805, 1, 0.0399145, 0.0399145, 0.0399145, 1, 0.151276, 0.151276, 0.151276, 1, 0.0520989, 0.052099, 0.0520989, 1, 0.0253225, 0.0253224, 0.0253224, 1, 0.0169989, 0.0169989, 0.0169989, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_jfrv3"]
+gradient = SubResource("Gradient_qc65m")
+
+[sub_resource type="Gradient" id="Gradient_m8f5t"]
+interpolation_color_space = 2
+offsets = PackedFloat32Array(0.0612245, 0.142857, 0.479592, 0.867347, 0.94898)
+colors = PackedColorArray(1, 1, 1, 1, 0.847183, 0.712888, 0.543856, 1, 0.111197, 0.111197, 0.111197, 1, 0.663472, 0.851266, 0.973165, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_852rh"]
+frequency = 0.0015
+fractal_type = 2
+fractal_octaves = 8
+fractal_gain = 0.64
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_uf8ny"]
+width = 2048
+height = 2048
+seamless = true
+seamless_blend_skirt = 0.62
+color_ramp = SubResource("Gradient_m8f5t")
+noise = SubResource("FastNoiseLite_852rh")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0dah6"]
+shader = SubResource("Shader_bhvja")
+shader_parameter/source_panorama = ExtResource("12_hna2f")
+shader_parameter/noise = SubResource("NoiseTexture2D_uf8ny")
+shader_parameter/gradient = SubResource("GradientTexture1D_jfrv3")
+
+[sub_resource type="Sky" id="Sky_6hr6c"]
+sky_material = SubResource("ShaderMaterial_0dah6")
+
+[sub_resource type="Environment" id="Environment_pbn7x"]
+background_mode = 2
+sky = SubResource("Sky_6hr6c")
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_sky_contribution = 0.75
+tonemap_mode = 3
+ssr_fade_in = 0.15529
+ssr_fade_out = 0.933032
+ssr_depth_tolerance = 128.0
+ssao_enabled = true
+ssao_radius = 2.0
+ssao_light_affect = 1.0
+ssao_ao_channel_affect = 1.0
+ssil_enabled = true
+sdfgi_bounce_feedback = 1.99
+sdfgi_min_cell_size = 1.00762
+sdfgi_cascade0_distance = 64.4875
+sdfgi_max_distance = 1031.8
+sdfgi_energy = 2.935
+glow_enabled = true
+glow_bloom = 1.0
+fog_density = 0.0015
+adjustment_enabled = true
+adjustment_contrast = 1.1
+
+[node name="Solar System" type="Node3D"]
+script = ExtResource("1_8skfh")
+
+[node name="PlanetContainer" type="Node3D" parent="."]
+
+[node name="sun" type="Node3D" parent="PlanetContainer"]
+script = ExtResource("2_xk8qk")
+orbit_speed = 0.0
+self_speed = 0.0
+entry_radius = 1.0
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="PlanetContainer/sun"]
+cast_shadow = 0
+radius = 1078.46
+radial_segments = 100
+rings = 64
+material = SubResource("ShaderMaterial_t57s6")
+
+[node name="BuildingContainer" type="Node3D" parent="PlanetContainer/sun"]
+
+[node name="wandering_oasis" type="Node3D" parent="PlanetContainer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3559.1, 0, 0)
+script = ExtResource("2_xk8qk")
+mass = 480
+planet_radius = 185
+distance_to_parent = 3734.71
+orbit_speed = -0.002
+orbit_revolution_progress = 0.165
+self_speed = -0.004
+has_terrain = true
+entry_radius = 407.175
+
+[node name="Area3D" type="Area3D" parent="PlanetContainer/wandering_oasis"]
+collision_layer = 16
+collision_mask = 16
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlanetContainer/wandering_oasis/Area3D"]
+shape = SubResource("SphereShape3D_q2l7v")
+
+[node name="VoxelLodTerrain" type="VoxelLodTerrain" parent="PlanetContainer/wandering_oasis"]
+generator = SubResource("VoxelGeneratorGraph_848e8")
+mesher = SubResource("VoxelMesherTransvoxel_yhm68")
+gi_mode = 1
+view_distance = 128
+lod_count = 8
+secondary_lod_distance = 32.0
+material = ExtResource("6_in61s")
+normalmap_enabled = true
+generate_collisions = false
+collision_layer = 9
+collision_mask = 9
+mesh_block_size = 32
+streaming_system = 1
+
+[node name="VoxelInstancer" type="VoxelInstancer" parent="PlanetContainer/wandering_oasis/VoxelLodTerrain"]
+library = SubResource("VoxelInstanceLibrary_e5gqk")
+up_mode = 1
+
+[node name="BuildingContainer" type="Node3D" parent="PlanetContainer/wandering_oasis"]
+
+[node name="Ship" parent="." instance=ExtResource("3_rkp8s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 220.517, 258.475, 25.065)
+can_sleep = false
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_pbn7x")
+script = ExtResource("13_xa6vv")
+
+[node name="Player" parent="." instance=ExtResource("6_ralp7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -279.528, 267.57, 0)
+
+[node name="SunLight" type="DirectionalLight3D" parent="."]
+shadow_enabled = true
+shadow_bias = 0.2
+shadow_blur = 0.474
+directional_shadow_split_1 = 0.056
+directional_shadow_split_2 = 0.137
+directional_shadow_split_3 = 0.353
+directional_shadow_max_distance = 1000.0
+script = ExtResource("15_w0euc")
+
+[connection signal="reference_body_changed" from="." to="Ship" method="_on_solar_system_reference_body_changed"]
+[connection signal="reference_body_changed" from="." to="Player" method="_on_solar_system_reference_body_changed"]
