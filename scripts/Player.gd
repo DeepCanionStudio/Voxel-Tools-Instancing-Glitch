@@ -56,7 +56,7 @@ func add_terrain():
 				tool.channel = VoxelBuffer.CHANNEL_SDF
 				tool.mode = VoxelTool.MODE_ADD
 				tool.grow_sphere($Pivot/Camera3D/TerrainRay.get_collision_point(), 4, 2.0)
-				
+				print("Balls")
 	elif Input.is_action_pressed("destroy"):
 		if $Pivot/Camera3D/TerrainRay.is_colliding():
 			if current_planet_surface:
@@ -71,6 +71,7 @@ func make_gravity():
 	current_planet = null
 	for area in $Area3D.get_overlapping_areas():
 		if area.get_parent() is PlanetBody:
+			current_planet_surface = area.get_parent().get_node("VoxelLodTerrain")
 			if area.get_parent().planet_type == 0:
 				var sqr = (area.global_position).distance_squared_to(global_position)
 				var force = (area.global_position - global_position).normalized()
@@ -86,7 +87,6 @@ func make_gravity():
 				max_accel = accel
 				current_planet = area.get_parent()
 				Global.current_planet = current_planet
-				current_planet_surface = area.get_parent().get_node("VoxelLodTerrain")
 
 func _unhandled_input(event):
 	if (!is_in_ship) and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
