@@ -8,7 +8,7 @@
 [ext_resource type="Script" path="res://scripts/SunLight.gd" id="15_w0euc"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_q2l7v"]
-radius = 445.535
+radius = 693.477
 
 [sub_resource type="FastNoise2" id="FastNoise2_bqksf"]
 period = 288.0
@@ -75,7 +75,7 @@ graph_data = {
 density = 0.8
 emit_mode = 2
 max_slope_degrees = 25.235
-min_height = 290.66
+min_height = 268.275
 max_height = 323.035
 min_scale = 0.385
 max_scale = 0.485
@@ -240,9 +240,10 @@ environment = SubResource("Environment_pbn7x")
 script = ExtResource("13_xa6vv")
 
 [node name="Player" parent="." instance=ExtResource("6_ralp7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.0228, 269.02, 289.88)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.0228, 301.409, 383.231)
 
 [node name="SunLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.273221, 0.961951, 0, -0.961951, 0.273221, 0, 0, 0)
 shadow_enabled = true
 shadow_bias = 0.2
 shadow_blur = 0.474
